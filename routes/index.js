@@ -1,13 +1,13 @@
 var express = require("express");
 var router = express.Router();
 var axios = require("axios");
-var config = require("../config.json");
+var githubUrl = "https://api.github.com/users";
 
 router.get("/users/:page?", async (req, res) => {
   const page = parseInt(req.params["page"]) || 0;
 
   try {
-    raw = await axios.get(config.githubUrl + "?since=" + page, getHeader());
+    raw = await axios.get(githubUrl + "?since=" + page, getHeader());
     let lastId = 0;
 
     if (raw.data.length) {
@@ -27,7 +27,7 @@ router.get("/users/:page?", async (req, res) => {
 router.get("/user/:id", async (req, res) => {
   const id = req.params["id"];
   try {
-    const raw = await axios.get(config.githubUrl + "/" + id, getHeader());
+    const raw = await axios.get(githubUrl + "/" + id, getHeader());
     res.json(raw.data);
   } catch (e) {
     console.error(e.response);
@@ -37,7 +37,7 @@ router.get("/user/:id", async (req, res) => {
 
 router.get("/user/:id/repos", async (req, res) => {
   const id = req.params["id"];
-  const url = config.githubUrl + "/" + id + "/repos";
+  const url = githubUrl + "/" + id + "/repos";
 
   try {
     const raw = await axios.get(url, getHeader());
@@ -50,7 +50,7 @@ router.get("/user/:id/repos", async (req, res) => {
 
 const getHeader = () => ({
   headers: {
-    Authorization: "token " + config.githubToken,
+    Authorization: "token " + process.env.GITHUB_KEY,
   },
 });
 
